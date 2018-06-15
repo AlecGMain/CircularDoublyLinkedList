@@ -36,6 +36,7 @@ namespace CircularDoublyLinkedList
                 Head.Previous = Head;
                 Head.Next = Head;
                 Tail = Head;
+                Count++;
             }
             else
             {
@@ -47,7 +48,7 @@ namespace CircularDoublyLinkedList
                 Head.Previous = newNode;
                 Tail.Next = newNode;
                 Tail = Tail.Next;
-                
+                Count++;
             }
         }
         public void AddToFront(T value)
@@ -77,10 +78,75 @@ namespace CircularDoublyLinkedList
             {
                 return false;
             }
+            else if(position == 0)
+            {
+                AddToFront(value);
+                return true;
+            }
+            else if (position == Count - 1)
+            {
+                AddToEnd(value);
+                return true;
+            }
             else
             {
-
+                Node<T> current = Head;
+                Node<T> current2 = Head;
+                for(int i = 0; i < position - 1; i++)
+                {
+                    Head = Head.Next;
+                }
+                current.Next.Next = current.Next;
+                current.Next.Value = value;
+                current.Next.Next.Previous = current.Next;
+                for(int i = 0; i < position; i++)
+                {
+                    Tail = Tail.Next;
+                }
+                current2.Next.Next = current2.Next;
+                current2.Next.Value = value;
+                current2.Next.Next.Previous = current2.Next;
+                Tail = current2;
+                Head = current;
+                return true;
             }
+        }
+        public bool RemoveFromFront()
+        {
+            if(IsEmpty())
+            {
+                return false;
+            }
+            else if (Count == 1)
+            {
+                Head = null;
+                Count--;
+                return true;
+            }
+            else
+            {
+                Head = Head.Next;
+                Head.Previous = Tail;
+                Tail.Next = Tail.Next.Next;
+                Tail.Next.Previous = Tail;
+                Count--;
+                return true;
+            }
+        }
+        public bool RemoveFromEnd()
+        {
+            if(IsEmpty())
+            {
+                return false;
+            }
+            else if (Count == 1)
+            {
+                RemoveFromFront();
+            }
+        }
+        public bool IsEmpty()
+        {
+            return Head == null;
         }
     }
 }
