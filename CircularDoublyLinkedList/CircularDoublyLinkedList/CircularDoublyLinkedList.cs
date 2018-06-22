@@ -25,6 +25,7 @@ namespace CircularDoublyLinkedList
             Head.Previous = Head;
             Head.Next = Head;
             Tail = Head;
+            Count = 1;
         }
         public void AddToEnd(T value)
         {
@@ -71,6 +72,7 @@ namespace CircularDoublyLinkedList
                 Tail.Next = newNode;
                 Head = Head.Previous;
             }
+            Count++;
         }
         public bool AddAt(int position,T value)
         {
@@ -83,7 +85,7 @@ namespace CircularDoublyLinkedList
                 AddToFront(value);
                 return true;
             }
-            else if (position == Count - 1)
+            else if (position == Count)
             {
                 AddToEnd(value);
                 return true;
@@ -94,20 +96,20 @@ namespace CircularDoublyLinkedList
                 Node<T> current2 = Head;
                 for(int i = 0; i < position - 1; i++)
                 {
-                    Head = Head.Next;
+                    current = current.Next;
                 }
                 current.Next.Next = current.Next;
                 current.Next.Value = value;
                 current.Next.Next.Previous = current.Next;
-                for(int i = 0; i < position; i++)
+                for(int i = 0; i < position - 1; i++)
                 {
-                    Tail = Tail.Next;
+                    current.Next = current;
                 }
-                current2.Next.Next = current2.Next;
-                current2.Next.Value = value;
-                current2.Next.Next.Previous = current2.Next;
-                Tail = current2;
+               
+                
                 Head = current;
+                Tail = Head.Next;
+                Count++;
                 return true;
             }
         }
@@ -121,6 +123,7 @@ namespace CircularDoublyLinkedList
             {
                 Head = null;
                 Count--;
+                Tail = Head;
                 return true;
             }
             else
@@ -142,6 +145,51 @@ namespace CircularDoublyLinkedList
             else if (Count == 1)
             {
                 RemoveFromFront();
+                return true;
+            }
+            else
+            {
+                Tail = Tail.Next;
+                Tail.Previous = Tail.Previous.Previous;
+                Tail.Previous.Next = Tail;
+                Head = Tail;
+                Tail = Tail.Previous;
+                Count--;
+                return true;
+            }
+        }
+        public bool RemoveAt(int position)
+        {
+            if(Count - 1 < position)
+            {
+                return false;
+            }
+            else if(position == 0)
+            {
+                RemoveFromFront();
+                return true;
+            }
+            else if (position == Count - 1)
+            {
+                RemoveFromEnd();
+                return true;
+            }
+            else
+            {
+                for(int i = 0; i < position - 1; i++)
+                {
+                    Head = Head.Next;
+                }
+                Head.Next = Head.Next.Next;
+                Head.Next.Previous = Head;
+                Node<T> temp = Head;
+                for (int i = 0; i < (Count) - (position - 1); i++)
+                {
+                    temp = temp.Next;
+                }
+                Tail = temp;
+                Count--;
+                return true;
             }
         }
         public bool IsEmpty()
