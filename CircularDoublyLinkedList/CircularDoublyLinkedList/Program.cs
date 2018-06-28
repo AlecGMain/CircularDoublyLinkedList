@@ -14,6 +14,7 @@ namespace CircularDoublyLinkedList
             list.AddToFront(4);
             list.AddToEnd(34);
             list.AddAt(2, 56);
+            list.RemoveFromFront();
         }
     }
 }

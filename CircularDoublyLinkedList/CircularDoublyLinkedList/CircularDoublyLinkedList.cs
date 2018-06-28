@@ -29,15 +29,16 @@ namespace CircularDoublyLinkedList
         }
         public void AddToEnd(T value)
         {
+            Count++;
             if (Count == 0)
             {
                 //make head and tail
                 Head = new Node<T>(value);
-                Tail = new Node<T>(value);
+                Tail = Head;
                 Head.Previous = Head;
                 Head.Next = Head;
                 Tail = Head;
-                Count++;
+
             }
             else
             {
@@ -49,15 +50,14 @@ namespace CircularDoublyLinkedList
                 Head.Previous = newNode;
                 Tail.Next = newNode;
                 Tail = Tail.Next;
-                Count++;
             }
         }
         public void AddToFront(T value)
         {
-            if(Count == 0)
+            if (Count == 0)
             {
                 Head = new Node<T>(value);
-                Tail = new Node<T>(value);
+                Tail = Head;
                 Head.Previous = Head;
                 Head.Next = Head;
                 Tail = Head;
@@ -74,13 +74,13 @@ namespace CircularDoublyLinkedList
             }
             Count++;
         }
-        public bool AddAt(int position,T value)
+        public bool AddAt(int position, T value)
         {
-            if(Count < position)
+            if (Count < position)
             {
                 return false;
             }
-            else if(position == 0)
+            else if (position == 0)
             {
                 AddToFront(value);
                 return true;
@@ -92,30 +92,37 @@ namespace CircularDoublyLinkedList
             }
             else
             {
-                Node<T> current = Head;
-                Node<T> current2 = Head;
-                for(int i = 0; i < position - 1; i++)
+                Node<T> prev = Head;
+                Node<T> next;
+                for (int i = 0; i < position - 1; i++)
                 {
-                    current = current.Next;
+                    prev = prev.Next;
                 }
-                current.Next.Next = current.Next;
-                current.Next.Value = value;
-                current.Next.Next.Previous = current.Next;
-                for(int i = 0; i < position - 1; i++)
+
+                var newNode = new Node<T>(value);
+                if (prev == Head)
                 {
-                    current.Next = current;
+                    Head = newNode;
                 }
-               
-                
-                Head = current;
-                Tail = Head.Next;
+                if (prev == Tail)
+                {
+                    Tail = newNode;
+                }
+
+
+                next = prev.Next;
+                prev.Next = newNode;
+                next.Previous = newNode;
+                newNode.Previous = prev;
+                newNode.Next = next;
+
                 Count++;
                 return true;
             }
         }
         public bool RemoveFromFront()
         {
-            if(IsEmpty())
+            if (IsEmpty())
             {
                 return false;
             }
@@ -130,15 +137,14 @@ namespace CircularDoublyLinkedList
             {
                 Head = Head.Next;
                 Head.Previous = Tail;
-                Tail.Next = Tail.Next.Next;
-                Tail.Next.Previous = Tail;
+                Tail.Next = Head;
                 Count--;
                 return true;
             }
         }
         public bool RemoveFromEnd()
         {
-            if(IsEmpty())
+            if (IsEmpty())
             {
                 return false;
             }
@@ -149,22 +155,20 @@ namespace CircularDoublyLinkedList
             }
             else
             {
-                Tail = Tail.Next;
-                Tail.Previous = Tail.Previous.Previous;
-                Tail.Previous.Next = Tail;
-                Head = Tail;
                 Tail = Tail.Previous;
+                Tail.Next = Head;
+                Head.Previous = Tail;
                 Count--;
                 return true;
             }
         }
         public bool RemoveAt(int position)
         {
-            if(Count - 1 < position)
+            if (Count - 1 < position)
             {
                 return false;
             }
-            else if(position == 0)
+            else if (position == 0)
             {
                 RemoveFromFront();
                 return true;
@@ -176,18 +180,23 @@ namespace CircularDoublyLinkedList
             }
             else
             {
-                for(int i = 0; i < position - 1; i++)
+                var current = Head;
+                for (int i = 0; i < position - 1; i++)
                 {
-                    Head = Head.Next;
+                    current = current.Next;
                 }
-                Head.Next = Head.Next.Next;
-                Head.Next.Previous = Head;
-                Node<T> temp = Head;
-                for (int i = 0; i < (Count) - (position - 1); i++)
+                if (current.Next == Head)
                 {
-                    temp = temp.Next;
+                    Head = current.Next.Next;
                 }
-                Tail = temp;
+                if (current.Next == Tail)
+                {
+                    Tail = current;
+                }
+
+                current.Next = current.Next.Next;
+                current.Next.Previous = current;
+
                 Count--;
                 return true;
             }
